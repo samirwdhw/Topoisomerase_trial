@@ -19,17 +19,63 @@ int track[N];
 
 void fill_cat(){	//To add randomly placed catenations
 
+	for(int i = 0; i< N_CATS; i++){
+		
+		int pos = rand()%N;
+
+		if(track[pos] == 1){
+			
+			i--;
+			continue;
+		}
+		else{
+
+			track[pos] = 1;
+
+		}
+
+	}	
+
+}
+
+void initialize(int a[], int n){	//To make all values of an array zero
+
+	for(int i = 0; i<n; i++){
+
+		a[i] = 0;
+
+	}
 
 
 }
 
-void work()		//To simulate a single time step 
+void work(){	//To simulate a single time step 
+
+
+
+
+}
+
+void print(int a[], int n){		//To display an array
+
+	for(int i = 0; i<n; i++){
+
+		cout<<a[i]<<" ";
+
+	}
+
+	cout<<endl;
+
+}
+
 
 int main(){
 
+	initialize(track, N);	//To make all entries 0
 
+	fill_cat();	//To insert catenations
 
-
+	print(track, N);
 
 	return 0;
 }
