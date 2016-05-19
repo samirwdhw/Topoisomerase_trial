@@ -13,21 +13,21 @@
 
 using namespace std;
 
-#define N 100	//SSize of latice
+#define N 30000	//SSize of latice
 #define N_ENZYMES 1		//No. Of enzymes around the latice
 #define FORCE 1.0		//Force applied on the strand (pN)
-#define V_MAX	1.5  //Max number of cycles per second at a given force (s)
-#define Km	280 //Michaelis Constant for the enzyme (uM)
+#define V_MAX	3.38  //Max number of cycles per second at a given force (s)
+#define Km	270 //Michaelis Constant for the enzyme (uM)
 #define Kb	1.38	//Boltzmann Constant (10^-23 units)
 #define T 300	//Temperature (K)
 #define E_PRODUCT	Kb*T //To increase speed
 #define TIME_STEP 0.1		//Time step
-#define DELTA 1.0	//F*Delta (nm)
+#define DELTA 0.241	//F*Delta (nm)
 #define T_MAX 10000		//Seconds
-#define FILE_NAME "results.dat"		//To see where to output data
-#define MAX_CATS 10.0		//Number of catenations to insert initially
+#define FILE_NAME "results_v_pre.dat"		//To see where to output data
+#define MAX_CATS 0.11*N		//Number of catenations to insert initially
 #define ATP_MAX 3000	//Maximum ATP till which readings are taken
-#define N_RUNS 100		//Number of runs for averaging
+#define N_RUNS 4000		//Number of runs for averaging
 
 int n_cats = N/10;	//No. of catenations in the latice
 
@@ -43,17 +43,7 @@ void calcProb(){	//To update the probability
 
 	f_each = FORCE/n_cats;
 
-/*
-	if(f_each == f_previous){
-		
-		return;
-	
-	}
-*/
-
 	float v = V_MAX*exp(-1*f_each*DELTA*100/(E_PRODUCT))*((float)ATP_conc/(ATP_conc + Km));		//Adjust 100 if order changes
-
-	//cout<<v<<" "<<endl;
 
 	prob = v*TIME_STEP;
 }
@@ -153,11 +143,13 @@ int main(){
 
 	f1.open(FILE_NAME);	
 
-	initialize(track, N);	//To make all entries 0
-
 	//print(track, N);
 
+	//cout<<"here1";
+
 	for(ATP_conc = 0; ATP_conc<	ATP_MAX; ATP_conc += ATP_MAX/100){
+
+		//cout<<ATP_conc;
 
 		float avg_cycles = 0;
 
@@ -165,19 +157,21 @@ int main(){
 
 			float time1; //To see the time elapsed
 
+			initialize(track, N);	//To make all entries 0
+
 			fill_cat();	//To insert catenations
 
 			for(time1 = 0; time1< T_MAX; time1 += TIME_STEP){
-				
+
 				if(n_cats == 0){
 					break;
 				}
 
-				//cout<<time1<<" "<<prob<<endl;;
-
 				work();
 
 			}
+
+//			cout<<"\t: "<<(float)(MAX_CATS-n_cats)/time1<<endl;
 
 			avg_cycles += (float)(MAX_CATS-n_cats)/time1;
 
@@ -187,8 +181,10 @@ int main(){
 
 		f1<<ATP_conc<<" "<<avg_cycles<<endl;
 		cout<<"ATP: "<<ATP_conc<<" "<<"Cycles per sec: "<<avg_cycles<<endl;
-
-	}
+//		f1<<ATP_conc<<" "<<(float)(MAX_CATS-n_cats)/time1<<endl;
+//		cout<<"ATP: "<<ATP_conc<<" "<<"Cycles per sec: "<<(float)(MAX_CATS-n_cats)/time1<<endl;
+		//cout<<"here";
+	}	
 
 
 	f1.close();
