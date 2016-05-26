@@ -22,8 +22,8 @@ using namespace std;
 #define T 300	//Temperature (K)
 #define E_PRODUCT	Kb*T //To increase speed
 #define TIME_STEP 0.1		//Time step
-#define DELTA 0.241	//F*Delta (nm)
-#define T_MAX 1000		//Seconds
+#define DELTA 0.241	//angie's parameter (pN), 0.835 is parameter of motion
+#define T_MAX 200000		//Seconds
 #define FILE_NAME "results_v_pre3.dat"		//To see where to output data
 #define MAX_CATS N		//Number of catenations to insert initially
 #define ATP_MAX 3000	//Maximum ATP till which readings are taken
@@ -38,6 +38,8 @@ float f_each; 	//Force experienced by each catenation
 float f_previous = 0;	//To increase speed
 float ATP_conc;		//Concentration of ATP
 int cats_resolved; //To see cycles per second
+int pos;	//To store where the nect catenation is
+
 
 void calcProb(){	//To update the probability
 
@@ -58,6 +60,7 @@ void fill_cat(){	//To add randomly placed catenations
 	}	
 
 	n_cats = MAX_CATS;
+	pos = 0;
 
 }
 
@@ -85,21 +88,16 @@ void work(){	//To simulate a single time step
 
 		calcProb();	//To calculate the probability now
 
-		int pos = rand()%N;
+		if(rand1() < prob){
+/*			
+			track[pos] = 0;
+			pos++;
+*/
+			n_cats--;
 
-		if(track[pos] == 0){
-			continue;
 		}
 
-		else{
-			
-			if( rand1() < prob){
-				
-				track[pos] = 0;
-				n_cats--;
 
-			}
-		}
 	}
 
 
@@ -128,7 +126,7 @@ int main(){
 
 	//cout<<"here1";
 
-	for(ATP_conc = 0; ATP_conc<	ATP_MAX; ATP_conc += ATP_MAX/100){
+	for(ATP_conc = 0; ATP_conc<= ATP_MAX; ATP_conc += ATP_MAX/100){
 
 		//cout<<ATP_conc;
 
@@ -142,6 +140,7 @@ int main(){
 
 			fill_cat();	//To insert catenations
 
+
 			for(time1 = 0; time1< T_MAX; time1 += TIME_STEP){
 
 				if(n_cats == 0){
@@ -149,7 +148,16 @@ int main(){
 				}
 
 				work();
+/*
+				if(runs == 0 && ATP_conc == 1650){	
+					
+					if((time1>T_MAX/4 && time1 <T_MAX/4 +TIME_STEP)|| (time1>T_MAX/2 && time1 <T_MAX/2 + TIME_STEP) || (time1>3*T_MAX/4 && time1 <3*T_MAX/4 + TIME_STEP) || (time1<T_MAX && time1 >T_MAX - TIME_STEP)){
 
+						cout<<"time: "<<time1<<"solved: "<<MAX_CATS-n_cats<<endl;
+
+					}
+				}
+*/
 			}
 
 //			cout<<"\t: "<<(float)(MAX_CATS-n_cats)/time1<<endl;
