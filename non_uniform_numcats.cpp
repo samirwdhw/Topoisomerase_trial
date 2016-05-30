@@ -16,9 +16,9 @@
 
 using namespace std;
 
-#define N 30000	//SSize of latice
+#define N 10000	//SSize of latice
 #define MAX_ENZYMES 100		//No. Of enzymes around the latice
-#define FORCE 5.0	//Max force applied
+#define FORCE 40.0	//Max force applied
 #define V_MAX	3.38  //Max number of cycles per second at a given force (s)
 #define Km	270 //Michaelis Constant for the enzyme (uM)
 #define Kb	1.38	//Boltzmann Constant (10^-23 units)
@@ -26,9 +26,9 @@ using namespace std;
 #define E_PRODUCT	Kb*T //To increase speed
 #define TIME_STEP 0.1		//Time step
 #define DELTA 0.241	//angie's parameter (pN), 0.835 is parameter of motion
-#define T_MAX 260.0		//Seconds
+#define T_MAX 30000.0		//Seconds
 #define FILE_NAME "time_non-uniform.dat"		//To see where to output data
-#define MAX_CATS N		//Number of catenations to insert initially
+#define MAX_CATS 100		//Number of catenations to insert initially
 #define ATP_MAX 2000	//Maximum ATP till which readings are taken
 #define N_RUNS 200		//Number of runs for averaging
 #define MAX_FORCE 30	//Maximum force (pN)
@@ -61,8 +61,20 @@ void calcProb(){	//To update the probability
 void fill_cat(){	//To add randomly placed catenations
 
 	for(int i = 0; i< MAX_CATS; i++){
+		
+		int pos = rand()%N;
+
+		if(track[pos] == 1){
 			
-		track[i] = 1;
+			i--;
+			continue;
+		}
+		
+		else{
+
+			track[pos] = 1;
+
+		}
 
 	}	
 
@@ -86,27 +98,31 @@ void initialize(int a[], int n){	//To make all values of an array zero
 
 	}
 
-	pos = 0;
+	fill_cat();
 
 
 }
+
 
 void work(){	//To simulate a single time step 
 
 	for(int i = 0; i< MAX_ENZYMES; i++){
 
+		calcProb();	//To calculate the probability now
+
 		if(n_cats == 0){
 			break;
 		}
 
-		calcProb();	//To calculate the probability now
+		pos = rand()%N;
 
-		//cout<<"here"<<endl;
+		if(track[pos] == 0){
+			continue;
+		}
 
 		if(rand1() < prob){
 			
 			track[pos] = 0;
-			pos++;
 
 			n_cats--;
 
@@ -175,6 +191,8 @@ int main(){
 
 			}
 
+
+			cout<<runs<<endl;
 			//cout<<"ATP conc: "<<ATP_conc<<"Force: "<<f_each<<"Cats: "<<n_cats<<"Runs: "<<runs<<" "<<"%"<<endl;
 
 		}
