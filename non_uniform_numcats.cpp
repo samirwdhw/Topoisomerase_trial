@@ -104,7 +104,7 @@ void initialize(int a[], int n){	//To make all values of an array zero
 }
 
 
-void work(){	//To simulate a single time step 
+void work(int time1){	//To simulate a single time step 
 
 	for(int i = 0; i< MAX_ENZYMES; i++){
 
@@ -114,7 +114,18 @@ void work(){	//To simulate a single time step
 			break;
 		}
 
+
+
+		if(time1*TIME_STEP <= 240){		//To localise along center
+
+			pos = rand()%(N/10) - N/5 + N/2;
+
+		}
+
+		else{			//Normal case
 		pos = rand()%N;
+		}
+
 
 		if(track[pos] == 0){
 			continue;
@@ -182,7 +193,7 @@ int main(){
 					break;
 				}
 
-				work();
+				work(time1);
 
 				if(runs == 0){
 					cout<<time1<<" "<<n_cats<<endl;
